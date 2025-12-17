@@ -109,6 +109,17 @@ initial_activities = {
         "max_participants": 20,
         "participants": ["ella@mergington.edu", "scarlett@mergington.edu"]
     },
+    "Manga Maniacs": {
+        "description": "Dive into epic adventures, powerful friendships, and unforgettable battles! Discover the artistry and storytelling of Japanese manga—from shonen action to slice-of-life stories. Whether you're Team Naruto or Team Luffy, join fellow fans to discuss your favorite series, share recommendations, and explore new worlds together!",
+        "schedule": "Tuesdays, 7:00 PM - 8:00 PM",
+        "schedule_details": {
+            "days": ["Tuesday"],
+            "start_time": "19:00",
+            "end_time": "20:00"
+        },
+        "max_participants": 15,
+        "participants": []
+    },
     "Math Club": {
         "description": "Solve challenging problems and prepare for math competitions",
         "schedule": "Tuesdays, 7:15 AM - 8:00 AM",
