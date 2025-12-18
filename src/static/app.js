@@ -472,22 +472,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Function to sanitize text for sharing
-  function sanitizeShareText(text) {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
   // Function to share an activity
   function shareActivity(activityName, activityDetails, platform) {
     const currentUrl = window.location.origin + window.location.pathname;
     const activitySchedule = formatSchedule(activityDetails);
-    // Sanitize text to prevent XSS
-    const sanitizedName = sanitizeShareText(activityName);
-    const sanitizedDesc = sanitizeShareText(activityDetails.description);
-    const sanitizedSchedule = sanitizeShareText(activitySchedule);
-    const shareText = `Check out ${sanitizedName} at Mergington High School! ${sanitizedDesc} Schedule: ${sanitizedSchedule}`;
+    // Use plain text for sharing - no HTML encoding needed for URL parameters and clipboard
+    const shareText = `Check out ${activityName} at Mergington High School! ${activityDetails.description} Schedule: ${activitySchedule}`;
     const shareUrl = currentUrl;
 
     switch (platform) {
@@ -510,6 +500,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
         break;
       case "email":
+        // encodeURIComponent provides proper encoding for email URLs
         window.location.href = `mailto:?subject=${encodeURIComponent(
           `Activity: ${activityName}`
         )}&body=${encodeURIComponent(shareText + "\n\n" + shareUrl)}`;
