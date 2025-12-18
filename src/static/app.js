@@ -472,11 +472,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Function to sanitize text for sharing
+  function sanitizeShareText(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
   // Function to share an activity
   function shareActivity(activityName, activityDetails, platform) {
     const currentUrl = window.location.origin + window.location.pathname;
     const activitySchedule = formatSchedule(activityDetails);
-    const shareText = `Check out ${activityName} at Mergington High School! ${activityDetails.description} Schedule: ${activitySchedule}`;
+    // Sanitize text to prevent XSS
+    const sanitizedName = sanitizeShareText(activityName);
+    const sanitizedDesc = sanitizeShareText(activityDetails.description);
+    const sanitizedSchedule = sanitizeShareText(activitySchedule);
+    const shareText = `Check out ${sanitizedName} at Mergington High School! ${sanitizedDesc} Schedule: ${sanitizedSchedule}`;
     const shareUrl = currentUrl;
 
     switch (platform) {
@@ -505,14 +516,20 @@ document.addEventListener("DOMContentLoaded", () => {
         break;
       case "copy":
         const textToCopy = `${shareText}\n\n${shareUrl}`;
-        navigator.clipboard
-          .writeText(textToCopy)
-          .then(() => {
-            showMessage("Link copied to clipboard!", "success");
-          })
-          .catch(() => {
-            showMessage("Failed to copy link", "error");
-          });
+        // Check if clipboard API is available
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard
+            .writeText(textToCopy)
+            .then(() => {
+              showMessage("Link copied to clipboard!", "success");
+            })
+            .catch(() => {
+              showMessage("Failed to copy link", "error");
+            });
+        } else {
+          // Fallback for browsers without clipboard API
+          showMessage("Clipboard access not available", "error");
+        }
         break;
     }
   }
@@ -575,16 +592,16 @@ document.addEventListener("DOMContentLoaded", () => {
       ${capacityIndicator}
       <div class="share-buttons">
         <span class="share-label">Share:</span>
-        <button class="share-btn share-facebook" data-activity="${name}" title="Share on Facebook">
+        <button class="share-btn share-facebook" data-platform="facebook" title="Share on Facebook">
           <span class="share-icon">📘</span>
         </button>
-        <button class="share-btn share-twitter" data-activity="${name}" title="Share on Twitter">
+        <button class="share-btn share-twitter" data-platform="twitter" title="Share on Twitter">
           <span class="share-icon">🐦</span>
         </button>
-        <button class="share-btn share-email" data-activity="${name}" title="Share via Email">
+        <button class="share-btn share-email" data-platform="email" title="Share via Email">
           <span class="share-icon">📧</span>
         </button>
-        <button class="share-btn share-copy" data-activity="${name}" title="Copy Link">
+        <button class="share-btn share-copy" data-platform="copy" title="Copy Link">
           <span class="share-icon">🔗</span>
         </button>
       </div>
@@ -652,13 +669,7 @@ document.addEventListener("DOMContentLoaded", () => {
     shareButtons.forEach((button) => {
       button.addEventListener("click", (event) => {
         event.stopPropagation();
-        const platform = button.classList.contains("share-facebook")
-          ? "facebook"
-          : button.classList.contains("share-twitter")
-          ? "twitter"
-          : button.classList.contains("share-email")
-          ? "email"
-          : "copy";
+        const platform = button.dataset.platform || "copy";
         shareActivity(name, details, platform);
       });
     });
