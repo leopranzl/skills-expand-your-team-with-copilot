@@ -446,16 +446,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Apply difficulty filter
-      if (currentDifficulty === "") {
-        // "All Levels" - only show activities with no difficulty specified
-        if (details.difficulty) {
-          return;
-        }
+      if (currentDifficulty === "" && !details.difficulty) {
+        // "All Levels" - show activity only if it has no difficulty specified
+      } else if (currentDifficulty !== "" && details.difficulty === currentDifficulty) {
+        // Specific difficulty selected - show activity only if it matches
+      } else if (currentDifficulty !== "") {
+        // Specific difficulty selected but activity doesn't match - skip
+        return;
       } else {
-        // Specific difficulty selected - only show activities with that difficulty
-        if (details.difficulty !== currentDifficulty) {
-          return;
-        }
+        // "All Levels" but activity has a difficulty - skip
+        return;
       }
 
       // Apply search filter
